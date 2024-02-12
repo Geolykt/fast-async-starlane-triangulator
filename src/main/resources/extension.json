@@ -1,0 +1,9 @@
+{
+  "entrypoint": "de.geolykt.fast.FASTExtension",
+  "name": "FAST",
+  "version": "${project.version}",
+  "mixinConfig": null,
+  "reversibleAccessSetter": null,
+  "dependencies": [ "StarloaderAPI" ],
+  "codeModifiers": [ ]
+}
