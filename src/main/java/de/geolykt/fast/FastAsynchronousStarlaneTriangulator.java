@@ -28,7 +28,7 @@ public final class FastAsynchronousStarlaneTriangulator {
         int gridXSize = (int) Math.ceil((maxX * 2D) / DimensionalRegion.REGION_SIZE) + 1;
         int gridYSize = (int) Math.ceil((maxY * 2D) / DimensionalRegion.REGION_SIZE) + 1;
         DimensionalRegion[] grid = new DimensionalRegion[gridXSize * gridYSize];
-        LongSet starlanes = new ConcurrentInt62Set(1024);
+        LongSet starlanes = new ConcurrentInt62Set(Math.max(Integer.highestOneBit(starCount) >> 5, 16));
 //      LongSet starlanes = new LongOpenHashSet();
 
         for (int i = 0; i < grid.length; i++) {

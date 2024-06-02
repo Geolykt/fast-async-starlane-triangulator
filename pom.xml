@@ -4,12 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.geolykt</groupId>
     <artifactId>fast-asynchronous-starlane-triangulator</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>FAST</name>
     <description>Fast Anychronous Starlane Triangulator</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <stianloader-concurrent-version>0.1.0-a20240212</stianloader-concurrent-version>
     </properties>
 
     <repositories>
@@ -36,7 +37,7 @@
         <dependency>
             <groupId>org.stianloader</groupId>
             <artifactId>stianloader-concurrent</artifactId>
-            <version>0.1.0-a20240212</version>
+            <version>${stianloader-concurrent-version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -96,40 +97,6 @@
                 <version>3.12.1</version>
                 <configuration>
                     <release>8</release>
-                </configuration>
-            </plugin>
-            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
-                    </transformers>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>**/module-info.class</exclude>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                                <exclude>META-INF/MANIFEST.MF</exclude>
-                                <exclude>META-INF/LICENSE.txt</exclude>
-                                <exclude>META-INF/NOTICE.txt</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
                 </configuration>
             </plugin>
         </plugins>
