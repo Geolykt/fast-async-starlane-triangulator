@@ -1,0 +1,62 @@
+
+-- Benchmark (24 bit shift) 2024-07-22 13:37 --
+
+Benchmark                                                         Mode    Cnt    Score   Error  Units
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync          sample  14963   16.707 ± 0.095  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.00    sample          13.533          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.50    sample          15.647          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.90    sample          18.842          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.95    sample          21.758          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.99    sample          32.845          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.999   sample          53.295          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.9999  sample          86.448          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p1.00    sample         105.382          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync           sample   6679   37.472 ± 0.062  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.00     sample          33.686          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.50     sample          37.224          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.90     sample          39.584          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.95     sample          40.370          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.99     sample          41.746          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.999    sample          44.017          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.9999   sample          46.399          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p1.00     sample          46.399          ms/op
+FASTConnectionBenchmark.connectFastutilSync                     sample   8123   30.808 ± 0.073  ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.00               sample          26.903          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.50               sample          30.573          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.90               sample          32.768          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.95               sample          33.620          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.99               sample          38.519          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.999              sample          47.597          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.9999             sample          54.985          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p1.00               sample          54.985          ms/op
+
+-- Benchmark (32 bit shift) 2024-07-22 14:16 --
+
+Benchmark                                                         Mode    Cnt    Score   Error  Units
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync          sample  15567   16.064 ± 0.098  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.00    sample          13.828          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.50    sample          15.286          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.90    sample          17.832          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.95    sample          18.711          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.99    sample          27.034          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.999   sample          68.309          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.9999  sample         121.739          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p1.00    sample         127.140          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync           sample   6542   38.266 ± 0.082  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.00     sample          34.275          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.50     sample          38.076          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.90     sample          40.829          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.95     sample          41.540          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.99     sample          42.926          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.999    sample          51.738          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.9999   sample          59.965          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p1.00     sample          59.965          ms/op
+FASTConnectionBenchmark.connectFastutilSync                     sample   8807   28.409 ± 0.048  ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.00               sample          24.773          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.50               sample          28.475          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.90               sample          30.048          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.95               sample          30.638          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.99               sample          31.785          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.999              sample          33.461          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.9999             sample          35.062          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p1.00               sample          35.062          ms/op

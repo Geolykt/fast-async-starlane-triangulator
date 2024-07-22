@@ -3,6 +3,8 @@ package de.geolykt.fast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +14,7 @@ import org.stianloader.concurrent.ConcurrentInt62Set;
 
 import de.geolykt.starloader.api.empire.Star;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -20,106 +23,69 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
 public final class FastAsynchronousStarlaneTriangulator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FastAsynchronousStarlaneTriangulator.class);
-    public static final FastAsynchronousStarlaneTriangulator INSTANCE = new FastAsynchronousStarlaneTriangulator();
-
-    public void connectStars(List<@NotNull Star> stars, double maxX, double maxY) {
-        int starCount = stars.size();
-        int gridXSize = (int) Math.ceil((maxX * 2D) / DimensionalRegion.REGION_SIZE) + 1;
-        int gridYSize = (int) Math.ceil((maxY * 2D) / DimensionalRegion.REGION_SIZE) + 1;
-        DimensionalRegion[] grid = new DimensionalRegion[gridXSize * gridYSize];
-        LongSet starlanes = new ConcurrentInt62Set(Math.max(Integer.highestOneBit(starCount) >> 5, 16));
-//      LongSet starlanes = new LongOpenHashSet();
-
-        for (int i = 0; i < grid.length; i++) {
-            grid[i] = new DimensionalRegion();
-        }
-
-        LOGGER.info("Grid size {} by {} at {} elements total", gridXSize, gridYSize, grid.length);
-
-        for (int i = 0; i < starCount; i++) {
-            Star star = stars.get(i);
-            int gridX = (int) ((star.getX() + maxX) / DimensionalRegion.REGION_SIZE);
-            int gridY = (int) ((star.getY() + maxY) / DimensionalRegion.REGION_SIZE);
-
-            grid[gridY * gridXSize + gridX].insert(star);
-        }
-
-        for (int i = 0; i < grid.length; i++) {
-            grid[i].bake();
-        }
-
-        LOGGER.info("Grid baked.");
-
-        AtomicInteger counter = new AtomicInteger();
-        CompletableFuture<?>[] futures = new CompletableFuture[grid.length + (gridXSize - 1) * gridYSize + gridXSize * (gridYSize - 1)];
-
-        for (int i = 0; i < grid.length; i++) {
-            final int gridId = i;
-            futures[i] = CompletableFuture.runAsync(() -> {
-                grid[gridId].connectStars(stars, grid, gridId, gridXSize, starlanes);
-                int val = counter.incrementAndGet();
-                if (val % 100 == 0) {
-                    LOGGER.info("Connecting stars... {}% done", ((float) val * 100) / futures.length);
-                }
-            });
-        }
-
-        int n = grid.length;
-        for (int i = 0; i < gridYSize; i++) {
-            for (int j = 0; j < (gridXSize - 1); j++) {
-                int baseIndex = i * gridXSize + j;
-                futures[n++] = CompletableFuture.runAsync(() -> {
-                    grid[baseIndex].connectRegions(grid[baseIndex + 1], starlanes);
-                    int progress = counter.incrementAndGet();
-                    if (progress % 100 == 0) {
-                        LOGGER.info("Connecting stars... {}% done", ((float) progress * 100) / futures.length);
-                    }
-                });
-            }
-        }
-        for (int i = 0; i < gridYSize - 1; i++) {
-            for (int j = 0; j < gridXSize; j++) {
-                int baseIndex = i * gridXSize + j;
-                futures[n++] = CompletableFuture.runAsync(() -> {
-                    grid[baseIndex].connectRegions(grid[baseIndex + gridXSize], starlanes);
-                    int progress = counter.incrementAndGet();
-                    if (progress % 100 == 0) {
-                        LOGGER.info("Connecting stars... {}% done", ((float) progress * 100) / futures.length);
-                    }
-                });
-            }
-        }
-
-        LOGGER.info("Runners started; awaiting completion");
-        CompletableFuture.allOf(futures).join();
-        LOGGER.info("Computed lanes");
-        long[] lanes = starlanes.toLongArray();
-        LOGGER.info("Applying {} starlanes", lanes.length);
-
-        for (long lane : lanes) {
-            Star starA = stars.get((int) (lane & 0xFFFFFF));
-            Star starB = stars.get((int) (lane >> 24));
-            starA.addNeighbour(starB);
-            starB.addNeighbour(starA);
-        }
-    }
-
     private static final class DimensionalRegion {
         // Constants uplifted from GMPP's codebase
         static final float GRANULARITY_FACTOR = 0.035F;
         static final float MAP_FACTOR = 5F;
         static final float REGION_SIZE = GRANULARITY_FACTOR * MAP_FACTOR * 16;
 
-        private final List<Star> stars = new ArrayList<>();
+        private static float distanceSq(float x1, float y1, float x2, float y2) {
+            x1 -= x2;
+            y1 -= y2;
+            return x1 * x1 + y1 * y1;
+        }
+        private static void handleReachabilities(Int2ObjectMap<IntSet> reachabilities, int a, int b) {
+            IntSet reachabilitiesA = reachabilities.get(a);
+            IntSet reachabilitiesB = reachabilities.get(b);
+
+            if (reachabilitiesA.size() > reachabilitiesB.size()) {
+                DimensionalRegion.mergeNetworks(reachabilitiesA, reachabilitiesB, reachabilities);
+            } else {
+                DimensionalRegion.mergeNetworks(reachabilitiesB, reachabilitiesA, reachabilities);
+            }
+        }
+
+        private static long hash(long a, long b) {
+            if (a > b) {
+                return (a << 32) | b;
+            } else {
+                return (b << 32) | a;
+            }
+        }
+
+        private static void mergeNetworks(IntSet absorber, IntSet absorbed, Int2ObjectMap<IntSet> networks) {
+            absorber.addAll(absorbed);
+            for (int member : absorbed) {
+                networks.put(member, absorber);
+            }
+        }
+
         private Star[] starArr;
 
-        void insert(Star star) {
-            this.stars.add(star);
-        }
+        private final List<Star> stars = new ArrayList<>();
 
         void bake() {
             this.starArr = this.stars.toArray(new Star[0]);
+        }
+
+        private void connectRegions(DimensionalRegion target, LongSet out) {
+            if (this.starArr.length == 0 || target.starArr.length == 0) {
+                return;
+            }
+            float cutoff = GRANULARITY_FACTOR * 2F;
+            boolean modified = false;
+            while (!modified) {
+                for (Star starT : target.starArr) {
+                    for (Star starS : this.starArr) {
+                        if (distanceSq(starS.getX(), starS.getY(), starT.getX(), starT.getY()) < cutoff) {
+                            out.add(DimensionalRegion.hash(starT.getUID() + 1, starS.getUID() + 1));
+                            modified = true;
+                        }
+                    }
+                }
+                cutoff += GRANULARITY_FACTOR;
+                assert cutoff < DimensionalRegion.REGION_SIZE * 2 : "Cutoff limit exceeeded";
+            }
         }
 
         void connectStars(List<Star> stars, DimensionalRegion[] grid, int regionId, int gridWidth, LongSet out) {
@@ -133,10 +99,8 @@ public final class FastAsynchronousStarlaneTriangulator {
             this.intertwineNets(stars, out, networks);
         }
 
-        private static float distanceSq(float x1, float y1, float x2, float y2) {
-            x1 -= x2;
-            y1 -= y2;
-            return x1 * x1 + y1 * y1;
+        void insert(Star star) {
+            this.stars.add(star);
         }
 
         private void intertwineNets(List<Star> stars, LongSet out, Int2ObjectMap<IntSet> networks) {
@@ -183,6 +147,7 @@ public final class FastAsynchronousStarlaneTriangulator {
                     final int sourceID = sourceStar.getUID() + 1;
                     final int targetID = targetStar.getUID() + 1;
                     out.add(DimensionalRegion.hash(sourceID, targetID));
+
                     DimensionalRegion.handleReachabilities(networks, sourceID, targetID);
 
                     if ((largestNetwork = Math.max(largestNetwork, networks.get(sourceID).size())) == this.starArr.length) {
@@ -204,51 +169,115 @@ public final class FastAsynchronousStarlaneTriangulator {
                 }
             }
         }
+    }
+    private static final boolean ENABLE_LOGGING = false;
+    public static final FastAsynchronousStarlaneTriangulator INSTANCE = new FastAsynchronousStarlaneTriangulator();
 
-        private void connectRegions(DimensionalRegion target, LongSet out) {
-            if (this.starArr.length == 0 || target.starArr.length == 0) {
-                return;
-            }
-            float cutoff = GRANULARITY_FACTOR * 2F;
-            boolean modified = false;
-            while (!modified) {
-                for (Star starT : target.starArr) {
-                    for (Star starS : this.starArr) {
-                        if (distanceSq(starS.getX(), starS.getY(), starT.getX(), starT.getY()) < cutoff) {
-                            out.add(DimensionalRegion.hash(starT.getUID() + 1, starS.getUID() + 1));
-                            modified = true;
-                        }
+    private static final Logger LOGGER = LoggerFactory.getLogger(FastAsynchronousStarlaneTriangulator.class);
+
+    public void connectStars(List<@NotNull Star> stars, double maxX, double maxY) {
+        this.connectStars(stars, maxX, maxY, (starCount) -> new ConcurrentInt62Set(Math.max(Integer.highestOneBit(starCount) >> 5, 16)), ForkJoinPool.commonPool());
+    }
+
+    public void connectStars(List<@NotNull Star> stars, double maxX, double maxY, Int2ObjectFunction<LongSet> longSetFactory, Executor executor) {
+        int starCount = stars.size();
+
+        int gridXSize = (int) Math.ceil((maxX * 2D) / DimensionalRegion.REGION_SIZE) + 1;
+        int gridYSize = (int) Math.ceil((maxY * 2D) / DimensionalRegion.REGION_SIZE) + 1;
+        DimensionalRegion[] grid = new DimensionalRegion[gridXSize * gridYSize];
+        LongSet starlanes = longSetFactory.apply(starCount);
+
+        for (int i = 0; i < grid.length; i++) {
+            grid[i] = new DimensionalRegion();
+        }
+
+        if (ENABLE_LOGGING) {
+            LOGGER.info("Grid size {} by {} at {} elements total", gridXSize, gridYSize, grid.length);
+        }
+
+        for (int i = 0; i < starCount; i++) {
+            Star star = stars.get(i);
+            int gridX = (int) ((star.getX() + maxX) / DimensionalRegion.REGION_SIZE);
+            int gridY = (int) ((star.getY() + maxY) / DimensionalRegion.REGION_SIZE);
+
+            grid[gridY * gridXSize + gridX].insert(star);
+        }
+
+        for (int i = 0; i < grid.length; i++) {
+            grid[i].bake();
+        }
+
+        if (ENABLE_LOGGING) {
+            LOGGER.info("Grid baked.");
+        }
+
+        AtomicInteger counter = new AtomicInteger();
+        CompletableFuture<?>[] futures = new CompletableFuture[grid.length + (gridXSize - 1) * gridYSize + gridXSize * (gridYSize - 1)];
+
+        for (int i = 0; i < grid.length; i++) {
+            final int gridId = i;
+            futures[i] = CompletableFuture.runAsync(() -> {
+                grid[gridId].connectStars(stars, grid, gridId, gridXSize, starlanes);
+                if (ENABLE_LOGGING) {
+                    int val = counter.incrementAndGet();
+                    if (val % 100 == 0) {
+                        LOGGER.info("Connecting stars... {}% done", ((float) val * 100) / futures.length);
                     }
                 }
-                cutoff += GRANULARITY_FACTOR;
-                assert cutoff < DimensionalRegion.REGION_SIZE * 2 : "Cutoff limit exceeeded";
+            }, executor);
+        }
+
+        int n = grid.length;
+        for (int i = 0; i < gridYSize; i++) {
+            for (int j = 0; j < (gridXSize - 1); j++) {
+                int baseIndex = i * gridXSize + j;
+                futures[n++] = CompletableFuture.runAsync(() -> {
+                    grid[baseIndex].connectRegions(grid[baseIndex + 1], starlanes);
+                    if (ENABLE_LOGGING) {
+                        int progress = counter.incrementAndGet();
+                        if (progress % 100 == 0) {
+                            LOGGER.info("Connecting stars... {}% done", ((float) progress * 100) / futures.length);
+                        }
+                    }
+                }, executor);
+            }
+        }
+        for (int i = 0; i < gridYSize - 1; i++) {
+            for (int j = 0; j < gridXSize; j++) {
+                int baseIndex = i * gridXSize + j;
+                futures[n++] = CompletableFuture.runAsync(() -> {
+                    grid[baseIndex].connectRegions(grid[baseIndex + gridXSize], starlanes);
+                    if (ENABLE_LOGGING) {
+                        int progress = counter.incrementAndGet();
+                        if (progress % 100 == 0) {
+                            LOGGER.info("Connecting stars... {}% done", ((float) progress * 100) / futures.length);
+                        }
+                    }
+                }, executor);
             }
         }
 
-        private static void handleReachabilities(Int2ObjectMap<IntSet> reachabilities, int a, int b) {
-            IntSet reachabilitiesA = reachabilities.get(a);
-            IntSet reachabilitiesB = reachabilities.get(b);
-
-            if (reachabilitiesA.size() > reachabilitiesB.size()) {
-                DimensionalRegion.mergeNetworks(reachabilitiesA, reachabilitiesB, reachabilities);
-            } else {
-                DimensionalRegion.mergeNetworks(reachabilitiesB, reachabilitiesA, reachabilities);
-            }
+        if (ENABLE_LOGGING) {
+            LOGGER.info("Runners started; awaiting completion");
         }
 
-        private static void mergeNetworks(IntSet absorber, IntSet absorbed, Int2ObjectMap<IntSet> networks) {
-            absorber.addAll(absorbed);
-            for (int member : absorbed) {
-                networks.put(member, absorber);
-            }
+        CompletableFuture.allOf(futures).join();
+
+        if (ENABLE_LOGGING) {
+            LOGGER.info("Computed lanes");
         }
 
-        private static long hash(long a, long b) {
-            if (a > b) {
-                return (a << 24) | b;
-            } else {
-                return (b << 24) | a;
-            }
+        long[] lanes = starlanes.toLongArray();
+
+        if (ENABLE_LOGGING) {
+            LOGGER.info("Applying {} starlanes", lanes.length);
+        }
+
+        for (long lane : lanes) {
+            Star starA = stars.get((int) (lane & 0xFFFF_FFFF));
+            Star starB = stars.get((int) (lane >> 32));
+            starA.addNeighbour(starB);
+            starB.addNeighbour(starA);
         }
     }
 }
