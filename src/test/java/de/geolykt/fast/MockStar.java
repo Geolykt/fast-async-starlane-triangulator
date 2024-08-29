@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import de.geolykt.starloader.api.CoordinateGrid;
 import de.geolykt.starloader.api.NamespacedKey;
+import de.geolykt.starloader.api.dimension.Empire;
 import de.geolykt.starloader.api.empire.ActiveEmpire;
 import de.geolykt.starloader.api.empire.Faction;
 import de.geolykt.starloader.api.empire.Star;
@@ -189,85 +190,87 @@ public class MockStar implements Star {
 
     @Override
     public float getSprawlLevel() {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean hasNeighbour(@NotNull Star star) {
-        // TODO Auto-generated method stub
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isNeighbour(@NotNull Star star) {
-        // TODO Auto-generated method stub
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void moveRelative(float x, float y) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeNeighbour(@NotNull Star star) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setAssignedEmpire(@NotNull ActiveEmpire empire) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setFaction(@Nullable Faction faction) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setHeat(float heat) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setMajorityFaith(@NotNull NamespacedKey religion) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setMinorityFaith(@Nullable NamespacedKey religion) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setNeighbours(@NotNull Vector<Star> neighbours) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setSprawlLevel(float sprawl) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void setWealth(float wealth) {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void syncCoordinates() {
-        // TODO Auto-generated method stub
-        
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean doTakeover(@NotNull Empire newOwner) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    @NotNull
+    public Empire getEmpire() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setEmpire(@NotNull Empire empire) {
+        throw new UnsupportedOperationException();
     }
 }

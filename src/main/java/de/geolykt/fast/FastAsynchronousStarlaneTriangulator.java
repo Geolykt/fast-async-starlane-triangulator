@@ -8,10 +8,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.stianloader.concurrent.ConcurrentInt62Set;
 
+import de.geolykt.starloader.api.Galimulator;
 import de.geolykt.starloader.api.empire.Star;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
@@ -162,7 +161,7 @@ public final class FastAsynchronousStarlaneTriangulator {
                 Star a = this.starArr[i];
                 for (int j = 0; j < i; j++) {
                     Star b = this.starArr[j];
-                    if (distanceSq(a.getX(), a.getY(), b.getX(), b.getY()) < GRANULARITY_FACTOR * 2F) {
+                    if (FastAsynchronousStarlaneTriangulator.DimensionalRegion.distanceSq(a.getX(), a.getY(), b.getX(), b.getY()) < GRANULARITY_FACTOR * 2F) {
                         out.add(DimensionalRegion.hash(a.getUID() + 1, b.getUID() + 1));
                         DimensionalRegion.handleReachabilities(reachabilities, a.getUID() + 1, b.getUID() + 1);
                     }
@@ -170,10 +169,8 @@ public final class FastAsynchronousStarlaneTriangulator {
             }
         }
     }
-    private static final boolean ENABLE_LOGGING = false;
-    public static final FastAsynchronousStarlaneTriangulator INSTANCE = new FastAsynchronousStarlaneTriangulator();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FastAsynchronousStarlaneTriangulator.class);
+    public static final FastAsynchronousStarlaneTriangulator INSTANCE = new FastAsynchronousStarlaneTriangulator();
 
     public void connectStars(List<@NotNull Star> stars, double maxX, double maxY) {
         this.connectStars(stars, maxX, maxY, (starCount) -> new ConcurrentInt62Set(Math.max(Integer.highestOneBit(starCount) >> 5, 16)), ForkJoinPool.commonPool());
@@ -187,12 +184,10 @@ public final class FastAsynchronousStarlaneTriangulator {
         DimensionalRegion[] grid = new DimensionalRegion[gridXSize * gridYSize];
         LongSet starlanes = longSetFactory.apply(starCount);
 
+        Galimulator.setBackgroundTaskProgress("Creating grid (" + grid.length + " regions)");
+
         for (int i = 0; i < grid.length; i++) {
             grid[i] = new DimensionalRegion();
-        }
-
-        if (ENABLE_LOGGING) {
-            LOGGER.info("Grid size {} by {} at {} elements total", gridXSize, gridYSize, grid.length);
         }
 
         for (int i = 0; i < starCount; i++) {
@@ -207,10 +202,6 @@ public final class FastAsynchronousStarlaneTriangulator {
             grid[i].bake();
         }
 
-        if (ENABLE_LOGGING) {
-            LOGGER.info("Grid baked.");
-        }
-
         AtomicInteger counter = new AtomicInteger();
         CompletableFuture<?>[] futures = new CompletableFuture[grid.length + (gridXSize - 1) * gridYSize + gridXSize * (gridYSize - 1)];
 
@@ -218,12 +209,8 @@ public final class FastAsynchronousStarlaneTriangulator {
             final int gridId = i;
             futures[i] = CompletableFuture.runAsync(() -> {
                 grid[gridId].connectStars(stars, grid, gridId, gridXSize, starlanes);
-                if (ENABLE_LOGGING) {
-                    int val = counter.incrementAndGet();
-                    if (val % 100 == 0) {
-                        LOGGER.info("Connecting stars... {}% done", ((float) val * 100) / futures.length);
-                    }
-                }
+                String progressDescription = String.format("Connecting stars: Calculating starlanes: %02.2f %% done.", counter.incrementAndGet() * 100.0F / futures.length);
+                Galimulator.setBackgroundTaskProgress(progressDescription);
             }, executor);
         }
 
@@ -233,12 +220,8 @@ public final class FastAsynchronousStarlaneTriangulator {
                 int baseIndex = i * gridXSize + j;
                 futures[n++] = CompletableFuture.runAsync(() -> {
                     grid[baseIndex].connectRegions(grid[baseIndex + 1], starlanes);
-                    if (ENABLE_LOGGING) {
-                        int progress = counter.incrementAndGet();
-                        if (progress % 100 == 0) {
-                            LOGGER.info("Connecting stars... {}% done", ((float) progress * 100) / futures.length);
-                        }
-                    }
+                    String progressDescription = String.format("Connecting stars: Calculating starlanes: %02.2f %% done.", counter.incrementAndGet() * 100.0F / futures.length);
+                    Galimulator.setBackgroundTaskProgress(progressDescription);
                 }, executor);
             }
         }
@@ -247,37 +230,25 @@ public final class FastAsynchronousStarlaneTriangulator {
                 int baseIndex = i * gridXSize + j;
                 futures[n++] = CompletableFuture.runAsync(() -> {
                     grid[baseIndex].connectRegions(grid[baseIndex + gridXSize], starlanes);
-                    if (ENABLE_LOGGING) {
-                        int progress = counter.incrementAndGet();
-                        if (progress % 100 == 0) {
-                            LOGGER.info("Connecting stars... {}% done", ((float) progress * 100) / futures.length);
-                        }
-                    }
+                    String progressDescription = String.format("Connecting stars: Calculating starlanes: %02.2f %% done.", counter.incrementAndGet() * 100.0F / futures.length);
+                    Galimulator.setBackgroundTaskProgress(progressDescription);
                 }, executor);
             }
         }
 
-        if (ENABLE_LOGGING) {
-            LOGGER.info("Runners started; awaiting completion");
-        }
-
         CompletableFuture.allOf(futures).join();
 
-        if (ENABLE_LOGGING) {
-            LOGGER.info("Computed lanes");
-        }
-
+        Galimulator.setBackgroundTaskProgress("Connecting stars... Applying starlanes (unknown total)");
         long[] lanes = starlanes.toLongArray();
-
-        if (ENABLE_LOGGING) {
-            LOGGER.info("Applying {} starlanes", lanes.length);
-        }
+        Galimulator.setBackgroundTaskProgress("Connecting stars... Applying starlanes (" + lanes.length + " total)");
 
         for (long lane : lanes) {
-            Star starA = stars.get((int) (lane & 0xFFFF_FFFF));
+            Star starA = stars.get((int) (lane & 0xFFFF_FFFFL));
             Star starB = stars.get((int) (lane >> 32));
             starA.addNeighbour(starB);
             starB.addNeighbour(starA);
         }
+
+        Galimulator.setBackgroundTaskProgress(null);
     }
 }

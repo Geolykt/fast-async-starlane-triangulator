@@ -29,7 +29,7 @@ public class FASTConnectionBenchmark {
         float maxY = (float) (Math.sqrt(FASTConnectionBenchmark.STAR_COUNT / 100) * 0.8F);
         float maxX = maxY * 1.7777778F;
 
-        for (int i = 0; i < STAR_COUNT; i++) {
+        for (int i = 0; i < FASTConnectionBenchmark.STAR_COUNT; i++) {
             MockStar s = new MockStar();
             s.setUid(i - 1);
             s.setCoords(ThreadLocalRandom.current().nextFloat() * maxX * 2 - maxX, ThreadLocalRandom.current().nextFloat() * maxY * 2 - maxY);
@@ -54,7 +54,7 @@ public class FASTConnectionBenchmark {
         float maxY = (float) (Math.sqrt(FASTConnectionBenchmark.STAR_COUNT / 100) * 0.8F);
         float maxX = maxY * 1.7777778F;
 
-        for (int i = 0; i < STAR_COUNT; i++) {
+        for (int i = 0; i <FASTConnectionBenchmark.STAR_COUNT; i++) {
             MockStar s = new MockStar();
             s.setUid(i - 1);
             s.setCoords(ThreadLocalRandom.current().nextFloat() * maxX * 2 - maxX, ThreadLocalRandom.current().nextFloat() * maxY * 2 - maxY);
@@ -79,7 +79,7 @@ public class FASTConnectionBenchmark {
         float maxY = (float) (Math.sqrt(FASTConnectionBenchmark.STAR_COUNT / 100) * 0.8F);
         float maxX = maxY * 1.7777778F;
 
-        for (int i = 0; i < STAR_COUNT; i++) {
+        for (int i = 0; i < FASTConnectionBenchmark.STAR_COUNT; i++) {
             MockStar s = new MockStar();
             s.setUid(i - 1);
             s.setCoords(ThreadLocalRandom.current().nextFloat() * maxX * 2 - maxX, ThreadLocalRandom.current().nextFloat() * maxY * 2 - maxY);
