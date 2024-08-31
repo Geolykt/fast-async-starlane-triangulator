@@ -12,6 +12,7 @@ import org.stianloader.concurrent.ConcurrentInt62Set;
 
 import de.geolykt.starloader.api.Galimulator;
 import de.geolykt.starloader.api.empire.Star;
+import de.geolykt.starloader.api.gui.BackgroundTask;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -184,7 +185,8 @@ public final class FastAsynchronousStarlaneTriangulator {
         DimensionalRegion[] grid = new DimensionalRegion[gridXSize * gridYSize];
         LongSet starlanes = longSetFactory.apply(starCount);
 
-        Galimulator.setBackgroundTaskProgress("Creating grid (" + grid.length + " regions)");
+        BackgroundTask previousTask = Galimulator.getBackgroundTask();
+        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Creating grid (" + grid.length + " regions)"));
 
         for (int i = 0; i < grid.length; i++) {
             grid[i] = new DimensionalRegion();
@@ -204,13 +206,13 @@ public final class FastAsynchronousStarlaneTriangulator {
 
         AtomicInteger counter = new AtomicInteger();
         CompletableFuture<?>[] futures = new CompletableFuture[grid.length + (gridXSize - 1) * gridYSize + gridXSize * (gridYSize - 1)];
+        Galimulator.setBackgroundTask(new ProgressBackgroundTask("Connecting stars: Calculating starlanes", counter, futures.length));
 
         for (int i = 0; i < grid.length; i++) {
             final int gridId = i;
             futures[i] = CompletableFuture.runAsync(() -> {
                 grid[gridId].connectStars(stars, grid, gridId, gridXSize, starlanes);
-                String progressDescription = String.format("Connecting stars: Calculating starlanes: %02.2f %% done.", counter.incrementAndGet() * 100.0F / futures.length);
-                Galimulator.setBackgroundTaskProgress(progressDescription);
+                counter.getAndIncrement();
             }, executor);
         }
 
@@ -220,8 +222,7 @@ public final class FastAsynchronousStarlaneTriangulator {
                 int baseIndex = i * gridXSize + j;
                 futures[n++] = CompletableFuture.runAsync(() -> {
                     grid[baseIndex].connectRegions(grid[baseIndex + 1], starlanes);
-                    String progressDescription = String.format("Connecting stars: Calculating starlanes: %02.2f %% done.", counter.incrementAndGet() * 100.0F / futures.length);
-                    Galimulator.setBackgroundTaskProgress(progressDescription);
+                    counter.getAndIncrement();
                 }, executor);
             }
         }
@@ -230,17 +231,16 @@ public final class FastAsynchronousStarlaneTriangulator {
                 int baseIndex = i * gridXSize + j;
                 futures[n++] = CompletableFuture.runAsync(() -> {
                     grid[baseIndex].connectRegions(grid[baseIndex + gridXSize], starlanes);
-                    String progressDescription = String.format("Connecting stars: Calculating starlanes: %02.2f %% done.", counter.incrementAndGet() * 100.0F / futures.length);
-                    Galimulator.setBackgroundTaskProgress(progressDescription);
+                    counter.getAndIncrement();
                 }, executor);
             }
         }
 
         CompletableFuture.allOf(futures).join();
 
-        Galimulator.setBackgroundTaskProgress("Connecting stars... Applying starlanes (unknown total)");
+        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (unknown total)"));
         long[] lanes = starlanes.toLongArray();
-        Galimulator.setBackgroundTaskProgress("Connecting stars... Applying starlanes (" + lanes.length + " total)");
+        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (" + lanes.length + " total)"));
 
         for (long lane : lanes) {
             Star starA = stars.get((int) (lane & 0xFFFF_FFFFL));
@@ -249,6 +249,6 @@ public final class FastAsynchronousStarlaneTriangulator {
             starB.addNeighbour(starA);
         }
 
-        Galimulator.setBackgroundTaskProgress(null);
+        Galimulator.setBackgroundTask(previousTask);
     }
 }

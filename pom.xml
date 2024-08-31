@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.stianloader</groupId>
             <artifactId>launcher-micromixin</artifactId>
-            <version>4.0.0-a20240118</version>
+            <version>4.0.0-a20240825</version>
             <scope>provided</scope>
             <optional>true</optional> <!-- Launcher-sponge is another valid variant -->
         </dependency>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>de.geolykt</groupId>
             <artifactId>starloader-api</artifactId>
-            <version>2.0.0-a20240828</version>
+            <version>2.0.0-a20240831</version>
             <scope>provided</scope>
         </dependency>
 
