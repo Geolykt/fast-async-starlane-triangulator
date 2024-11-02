@@ -1,4 +1,105 @@
+-- Benchmark (Version 1.2.1) 2024-11-02 19:25 --
+
+Benchmark                                                            Mode    Cnt   Score   Error  Units
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync             sample  16093  15.532 ± 0.057  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.00       sample         13.402          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.50       sample         14.844          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.90       sample         17.727          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.95       sample         18.547          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.99       sample         25.068          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.999      sample         37.290          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.9999     sample         47.445          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p1.00       sample         47.645          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync              sample   6450  38.807 ± 0.135  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.00        sample         33.522          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.50        sample         38.076          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.90        sample         42.074          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.95        sample         44.433          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.99        sample         51.970          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.999       sample         67.435          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.9999      sample         90.440          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p1.00        sample         90.440          ms/op
+FASTConnectionBenchmark.connectFastutilSync                        sample   8299  30.146 ± 0.068  ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.00                  sample         26.903          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.50                  sample         29.852          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.90                  sample         31.654          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.95                  sample         32.735          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.99                  sample         37.618          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.999                 sample         49.296          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.9999                sample         57.016          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p1.00                  sample         57.016          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync          sample  16006  15.618 ± 0.107  ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.00    sample         11.370          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.50    sample         14.451          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.90    sample         20.546          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.95    sample         23.822          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.99    sample         31.883          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.999   sample         44.236          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.9999  sample         63.145          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p1.00    sample         67.633          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync                     sample   8366  29.909 ± 0.053  ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.00               sample         26.771          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.50               sample         29.688          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.90               sample         31.687          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.95               sample         32.539          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.99               sample         34.559          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.999              sample         39.463          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.9999             sample         49.152          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p1.00               sample         49.152          ms/op
+
+-- Benchmark (Version 1.2.1) 2024-11-02 15:32 --
+# Geol note: This benchmark was performed while running Minecraft in the background - numbers are skewed.
+
+Benchmark                                                            Mode    Cnt    Score   Error  Units
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync             sample  13138   19.031 ± 0.192  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.00       sample          13.812          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.50       sample          16.441          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.90       sample          27.001          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.95       sample          32.276          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.99       sample          46.964          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.999      sample          70.295          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.9999     sample         101.142          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p1.00       sample         103.940          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync              sample   6301   39.708 ± 0.207  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.00        sample          33.128          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.50        sample          38.994          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.90        sample          42.992          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.95        sample          45.869          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.99        sample          56.548          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.999       sample         111.588          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.9999      sample         139.985          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p1.00        sample         139.985          ms/op
+FASTConnectionBenchmark.connectFastutilSync                        sample   7962   31.424 ± 0.180  ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.00                  sample          24.969          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.50                  sample          30.409          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.90                  sample          35.501          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.95                  sample          38.797          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.99                  sample          49.635          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.999                 sample          81.206          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.9999                sample         135.004          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p1.00                  sample         135.004          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync          sample  10489   23.845 ± 0.254  ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.00    sample          11.993          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.50    sample          22.020          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.90    sample          33.358          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.95    sample          38.470          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.99    sample          51.459          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.999   sample          79.911          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.9999  sample         113.844          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p1.00    sample         113.902          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync                     sample   6597   37.945 ± 0.219  ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.00               sample          30.704          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.50               sample          36.372          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.90               sample          45.416          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.95               sample          48.300          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.99               sample          55.839          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.999              sample          71.436          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.9999             sample         112.460          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p1.00               sample         112.460          ms/op
+
+
 -- Benchmark (Version 1.2.0) 2024-11-02 14:08 --
+# Geol note: This benchmark was performed while running Minecraft in the background - numbers are skewed.
 
 Benchmark                                                            Mode    Cnt    Score   Error  Units
 FASTConnectionBenchmark.connectConcurrentInt62SetAsync             sample  10774   23.219 ± 0.460  ms/op

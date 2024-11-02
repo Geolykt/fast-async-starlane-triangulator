@@ -20,6 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
 public final class FastAsynchronousStarlaneTriangulator {
@@ -34,6 +35,7 @@ public final class FastAsynchronousStarlaneTriangulator {
             y1 -= y2;
             return x1 * x1 + y1 * y1;
         }
+
         private static void handleReachabilities(Int2ObjectMap<IntSet> reachabilities, int a, int b) {
             IntSet reachabilitiesA = reachabilities.get(a);
             IntSet reachabilitiesB = reachabilities.get(b);
@@ -238,11 +240,12 @@ public final class FastAsynchronousStarlaneTriangulator {
 
         CompletableFuture.allOf(futures).join();
 
-        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (unknown total)"));
-        long[] lanes = starlanes.toLongArray();
-        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (" + lanes.length + " total)"));
+        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (" + starlanes.size() + ")"));
+//        long[] lanes = starlanes.toLongArray();
+//        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (" + lanes.length + " total)"));
 
-        for (long lane : lanes) {
+        for (LongIterator laneIterator = starlanes.longIterator(); laneIterator.hasNext();) {
+            long lane = laneIterator.nextLong();
             Star starA = stars.get((int) (lane & 0xFFFF_FFFFL));
             Star starB = stars.get((int) (lane >> 32));
             starA.addNeighbour(starB);
