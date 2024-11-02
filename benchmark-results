@@ -1,3 +1,51 @@
+-- Benchmark (Version 1.2.0) 2024-11-02 14:08 --
+
+Benchmark                                                            Mode    Cnt    Score   Error  Units
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync             sample  10774   23.219 ± 0.460  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.00       sample          13.730          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.50       sample          17.596          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.90       sample          37.257          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.95       sample          48.038          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.99       sample          85.098          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.999      sample         151.637          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p0.9999     sample         254.729          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetAsync:p1.00       sample         256.639          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync              sample   4871   51.428 ± 0.652  ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.00        sample          35.717          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.50        sample          47.645          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.90        sample          65.339          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.95        sample          76.205          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.99        sample         105.062          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.999       sample         167.959          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p0.9999      sample         212.074          ms/op
+FASTConnectionBenchmark.connectConcurrentInt62SetSync:p1.00        sample         212.074          ms/op
+FASTConnectionBenchmark.connectFastutilSync                        sample   7050   35.495 ± 0.262  ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.00                  sample          27.558          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.50                  sample          33.260          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.90                  sample          42.992          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.95                  sample          48.264          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.99                  sample          62.718          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.999                 sample          84.935          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p0.9999                sample         145.752          ms/op
+FASTConnectionBenchmark.connectFastutilSync:p1.00                  sample         145.752          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync          sample  10740   23.283 ± 0.222  ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.00    sample          12.648          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.50    sample          21.758          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.90    sample          32.408          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.95    sample          36.700          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.99    sample          46.635          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.999   sample          63.560          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p0.9999  sample          72.939          ms/op
+FASTConnectionBenchmark.connectJavaConcurrentHashMapAsync:p1.00    sample          73.007          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync                     sample   6837   36.614 ± 0.182  ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.00               sample          28.803          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.50               sample          35.652          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.90               sample          41.353          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.95               sample          45.089          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.99               sample          55.222          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.999              sample          70.814          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p0.9999             sample          76.546          ms/op
+FASTConnectionBenchmark.connectJavaHashSetSync:p1.00               sample          76.546          ms/op
 
 -- Benchmark (24 bit shift) 2024-07-22 13:37 --
 
