@@ -27,8 +27,9 @@ public final class FastAsynchronousStarlaneTriangulator {
     private static final class DimensionalRegion {
         // Constants uplifted from GMPP's codebase
         static final float GRANULARITY_FACTOR = 0.035F;
+        static final float BASE_CONNECTION_THRESHOLD = GRANULARITY_FACTOR * 0.5F;
         static final float MAP_FACTOR = 5F;
-        static final float REGION_SIZE = GRANULARITY_FACTOR * MAP_FACTOR * 16;
+        static final float REGION_SIZE = GRANULARITY_FACTOR * MAP_FACTOR * 16F;
 
         private static float distanceSq(float x1, float y1, float x2, float y2) {
             x1 -= x2;
@@ -74,18 +75,18 @@ public final class FastAsynchronousStarlaneTriangulator {
             if (this.starArr.length == 0 || target.starArr.length == 0) {
                 return;
             }
-            float cutoff = GRANULARITY_FACTOR * 2F;
+            float cutoff = DimensionalRegion.BASE_CONNECTION_THRESHOLD;
             boolean modified = false;
             while (!modified) {
                 for (Star starT : target.starArr) {
                     for (Star starS : this.starArr) {
-                        if (distanceSq(starS.getX(), starS.getY(), starT.getX(), starT.getY()) < cutoff) {
+                        if (DimensionalRegion.distanceSq(starS.getX(), starS.getY(), starT.getX(), starT.getY()) < cutoff) {
                             out.add(DimensionalRegion.hash(starT.getUID() + 1, starS.getUID() + 1));
                             modified = true;
                         }
                     }
                 }
-                cutoff += GRANULARITY_FACTOR;
+                cutoff += DimensionalRegion.GRANULARITY_FACTOR;
                 assert cutoff < DimensionalRegion.REGION_SIZE * 2 : "Cutoff limit exceeeded";
             }
         }
@@ -120,7 +121,7 @@ public final class FastAsynchronousStarlaneTriangulator {
                         if (sourceNetwork.contains(other.getUID() + 1)) {
                             continue;
                         }
-                        float dist = distanceSq(star.getX(), star.getY(), other.getX(), other.getY());
+                        float dist = DimensionalRegion.distanceSq(star.getX(), star.getY(), other.getX(), other.getY());
                         if (dist < minDist) {
                             minDist = dist;
                             minDistStar = other;
@@ -132,13 +133,13 @@ public final class FastAsynchronousStarlaneTriangulator {
                     Star sourceStar = star;
                     Star targetStar = minDistStar;
 
-                    if (minDist > GRANULARITY_FACTOR * 4F) {
+                    if (minDist > DimensionalRegion.GRANULARITY_FACTOR * 4F) {
                         // That is a long distance ...
                         // Perhaps a different star from the same source network can connect to it?
                         IntIterator sourceNetworkIterator = sourceNetwork.iterator();
                         while (sourceNetworkIterator.hasNext()) {
                             Star candidate = stars.get(sourceNetworkIterator.nextInt());
-                            float dist = distanceSq(candidate.getX(), candidate.getY(), targetStar.getX(), targetStar.getY());
+                            float dist = DimensionalRegion.distanceSq(candidate.getX(), candidate.getY(), targetStar.getX(), targetStar.getY());
                             if (dist < minDist) {
                                 minDist = dist;
                                 sourceStar = candidate;
@@ -164,7 +165,7 @@ public final class FastAsynchronousStarlaneTriangulator {
                 Star a = this.starArr[i];
                 for (int j = 0; j < i; j++) {
                     Star b = this.starArr[j];
-                    if (FastAsynchronousStarlaneTriangulator.DimensionalRegion.distanceSq(a.getX(), a.getY(), b.getX(), b.getY()) < GRANULARITY_FACTOR * 2F) {
+                    if (FastAsynchronousStarlaneTriangulator.DimensionalRegion.distanceSq(a.getX(), a.getY(), b.getX(), b.getY()) < DimensionalRegion.BASE_CONNECTION_THRESHOLD) {
                         out.add(DimensionalRegion.hash(a.getUID() + 1, b.getUID() + 1));
                         DimensionalRegion.handleReachabilities(reachabilities, a.getUID() + 1, b.getUID() + 1);
                     }
@@ -241,8 +242,6 @@ public final class FastAsynchronousStarlaneTriangulator {
         CompletableFuture.allOf(futures).join();
 
         Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (" + starlanes.size() + ")"));
-//        long[] lanes = starlanes.toLongArray();
-//        Galimulator.setBackgroundTask(new ConstantBackgroundTask("Connecting stars: Applying starlanes (" + lanes.length + " total)"));
 
         for (LongIterator laneIterator = starlanes.longIterator(); laneIterator.hasNext();) {
             long lane = laneIterator.nextLong();
